@@ -3,6 +3,9 @@
    
    moving sprites routines seen at: http://gamedevgeek.com/tutorials/moving-sprites-with-sdl/
    inprint routines from: https://github.com/driedfruit/SDL_inprint
+   
+   V0.1 Initial version 9/2021
+   V0.2 + colored flowers 10/2021
 */   
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +45,14 @@ void update() {
         }
         continue;
     }
+}
+
+void wait_a_bit() {
+  int c;
+  for (c=0; c<5; c++) {
+    SDL_Delay(1000);
+    update();
+  }
 }
 
 void draw_bmp() {
@@ -107,6 +118,47 @@ void draw_4rect(int c, int d) {
      /* Bot - Right */
      x1 = SCREEN_WIDTH-x; 
      y1 = SCREEN_HEIGHT-y;
+     SDL_Rect rect4 = {x1, y1, 20, 15};
+     SDL_FillRect(screen, &rect4, c);
+
+     /* update the screen (aka double buffering) */
+     SDL_Flip(screen);
+     for (i=0; i<5; i++) {
+       SDL_Delay(d);
+       update();
+     }
+}
+
+void draw_flower(int c, int d) {
+     int         x = 0; //x coordinate of our pixel
+     int         y = 0; //y coordinate of our pixel
+     int         x1= 0; //x coordinate of our pixel
+     int         y1= 0; //y coordinate of our pixel
+     int	 i = 0;
+
+     /* Left */
+     /* not in multiple of w=20 and y=15 */
+     /* x = rand()%(SCREEN_WIDTH); */
+     /* y = rand()%(SCREEN_HEIGHT); */
+     /* in multiple of w=20 and y=15 */
+     x = (rand()%(SCREEN_WIDTH/20)*20);
+     y = (rand()%(SCREEN_HEIGHT/15)*15);
+     SDL_Rect rect1 = {x, y, 20, 15};
+     SDL_FillRect(screen, &rect1, c);
+     
+     /* Right */
+     x1 = x+40; 
+     SDL_Rect rect2 = {x1, y, 20, 15};
+     SDL_FillRect(screen, &rect2, c);
+
+     /* Bot */
+     x1 = x+20; 
+     y1 = y+15;
+     SDL_Rect rect3 = {x1, y1, 20, 15};
+     SDL_FillRect(screen, &rect3, c);
+
+     /* Top */
+     y1 = y-15;
      SDL_Rect rect4 = {x1, y1, 20, 15};
      SDL_FillRect(screen, &rect4, c);
 
@@ -214,10 +266,7 @@ int main(int argc, char *argv[]) {
 
      /* show sdl logo */
      draw_bmp();
-     for (c=0; c<5; c++) {
-       SDL_Delay(1000);
-       update();
-     }
+     wait_a_bit();
      clear();
 
      // buzzwords bw
@@ -234,10 +283,7 @@ int main(int argc, char *argv[]) {
 	  SDL_Delay(500);
 	}
 
-     for (c=0; c<5; c++) {
-       SDL_Delay(1000);
-       update();
-     }
+     wait_a_bit();
      clear();
      
      // buzzwords color
@@ -254,10 +300,7 @@ int main(int argc, char *argv[]) {
 	  SDL_Delay(500);
 	}
 
-     for (c=0; c<5; c++) {
-       SDL_Delay(1000);
-       update();
-     }
+     wait_a_bit();
      kill_inline_font();
      clear();
      
@@ -299,7 +342,12 @@ int main(int argc, char *argv[]) {
      clear();
      SDL_FreeSurface(sprite);
      SDL_FreeSurface(sprite2);
-
+    
+     /* draw all color flowers */
+     for (i=100;i>50;i--) draw_flower(rand()%255,i);
+     wait_a_bit();
+     clear();
+     
      /* draw blue and green rects caleidoscope */
      for (i=100;i>0;i--) draw_4rect(rand()%10+5,i);
 
